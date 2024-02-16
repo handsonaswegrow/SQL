@@ -1,0 +1,51 @@
+#In this SQL, I'm querying a database with multiple tables in it to quantify statistics about customer and order data. 
+
+SELECT * FROM customers LIMIT 20;
+SELECT * FROM JanSales LIMIT 20;
+
+/* How many orders were placed in January?*/
+SELECT COUNT(orderid)
+FROM BIT_DB.JanSales
+WHERE length(orderid) = 6 
+AND orderid <> 'Order ID';
+
+/*How many of Jan orders were for an iPhone?*/
+SELECT COUNT(orderid) 
+FROM BIT_DB.JanSales
+WHERE length(orderid) = 6
+AND orderid <> 'Order ID'
+AND product='iPhone';
+
+/*Select customer account numbers for all orders that were placed in February.*/
+SELECT acctnum
+FROM BIT_DB.customers cus
+INNER JOIN BIT_DB.FebSales feb
+ON cus.order_id = feb.orderID
+WHERE length(orderid) = 6
+AND orderid <> 'Order ID';
+
+/*Cheapest Product sold in Jan, & the price*/
+SELECT DISTINCT product, price
+FROM BIT_DB.JanSales Jan
+ORDER BY price ASC
+LIMIT 1;
+
+/*total revenue for each product sold in January*/
+SELECT product, ROUND(sum(quantity)*price,2) AS revenue
+FROM BIT_DB.JanSales Jan
+GROUP BY product;
+
+/*products sold in February at 548 Lincoln St, Seattle, WA 98101, how many of each were sold, and what was the total revenue*/
+SELECT product, sum(quantity), sum(quantity)* price AS total_rev
+FROM BIT_DB.FebSales
+WHERE location ='548 Lincoln St, Seattle, WA 98101'
+GROUP BY product;
+
+/*customers  thatordered more than 2 products at a time in February, and what was the average amount spent for those customers*/
+SELECT count(distinct cust.acctnum), ROUND(avg(quantity* price),2) AS avg_spent
+FROM BIT_DB.FebSales feb
+LEFT JOIN BIT_DB.customers cust
+ON feb.orderid=cust.order_id
+WHERE feb.quantity > 2
+AND length(orderid) = 6
+AND orderid <> 'Order ID';
