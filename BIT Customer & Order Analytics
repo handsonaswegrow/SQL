@@ -56,3 +56,54 @@ SELECT DISTINCT product, sum(quantity)
 FROM BIT_DB.FebSales
 WHERE location LIKE '%Los Angeles%'
 GROUP BY product;
+
+/*
+Which locations in New York received at least 3 orders in January, and how many orders did they each receive? (Hint: use HAVING).
+How many of each type of headphone were sold in February?
+What was the average amount spent per account in February? (Hints: For this question, we want the average amount spent / number of accounts, not the amount spent by each account. To multiply, you can use the * symbol, and to divide, you can use the / symbol.)
+What was the average quantity of products purchased per account in February? (Hint: just like question 3, we want the overall average, not the average for each account individually).
+Which product brought in the most revenue in January and how much revenue did it bring in total?
+*/
+
+/*locations in NY with >3 orders in Jan*/
+SELECT location, count(orderID) AS num_of_Orders
+FROM BIT_DB.JanSales
+WHERE location LIKE '%NY%'
+GROUP BY location
+HAVING count(orderID)>=3
+AND length(orderid) = 6
+AND orderid <> 'Order ID';
+
+/*#of headphones ordered*/
+SELECT product, count(quantity) AS num_of_headphones
+FROM BIT_DB.FebSales 
+WHERE product LIKE '%headphone%'
+GROUP BY product
+HAVING count(product)>=3
+AND length(orderid) = 6
+AND orderid <> 'Order ID';
+
+/* Avg amount spent / number of accounts  in Feb*/
+SELECT ROUND(SUM(feb.quantity * feb.price) / count(DISTINCT cust.acctnum),2) AS avg_amt_spent
+FROM BIT_DB.FebSales Feb
+LEFT JOIN BIT_DB.customers cust
+ON Feb.OrderID=cust.order_id
+AND length(orderid) = 6
+AND orderid <> 'Order ID';
+
+/*Avg qty of products / acct purchased in Feb*/
+SELECT ROUND(SUM(feb.quantity) / count(DISTINCT cust.acctnum),2) AS avg_qty_acct
+FROM BIT_DB.FebSales Feb
+LEFT JOIN BIT_DB.customers cust
+ON Feb.OrderID=cust.order_id
+AND length(orderid) = 6
+AND orderid <> 'Order ID';
+
+/*Product w/ most rev in Jan, how much*/
+SELECT jan.product, sum(quantity*price) AS product_rev
+FROM BIT_DB.JanSales Jan
+WHERE length(orderid) = 6
+AND orderid <> 'Order ID'
+GROUP BY jan.product
+ORDER BY product_rev DESC
+LIMIT 1;
