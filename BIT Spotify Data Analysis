@@ -48,9 +48,9 @@ ORDER BY popularity DESC
 LIMIT 10;
 
 /*Let's give the songs a score based on the loudness, energy, liveness, danceability, tempo and popularity and rank the top 10*/
-SELECT track_name, popularity, ROUND(danceability*100,2) AS avg_dance
-FROM BIT_DB.Spotifydata
-ORDER BY popularity DESC
+SELECT track_name, popularity, ROUND(((-loudness)+(energy*10)+(liveness*10)+(danceability*10)+(tempo)+(popularity))/6,2) AS track_score
+FROM Spotifydata
+ORDER BY track_score DESC
 LIMIT 10;
 
 /*How many hits does each artist have & what's their avg popularity*/
