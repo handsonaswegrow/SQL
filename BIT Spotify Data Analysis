@@ -59,4 +59,15 @@ FROM BIT_DB.Spotifydata
 GROUP BY artist_name
 ORDER BY hits DESC, avg_pop DESC;
 
+/*Use a CTE to calc avg pop of artists and label those with 90+ as top star*/
+WITH popularity_avg_CTE AS (
+    SELECT 
+    s.artist_name, avg(s.popularity) AS avg_pop
+    FROM Spotifydata s
+    GROUP BY s.artist_name
+    )
+    
+SELECT artist_name, avg_pop, 'Top Star' AS tag
+FROM popularity_avg_CTE
+WHERE avg_pop >=90;
 
